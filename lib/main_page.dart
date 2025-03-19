@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gemini/global_variables.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -31,6 +32,7 @@ class _MainPageState extends State<MainPage> {
           padding: const EdgeInsets.all(20),
           child: ListView(
             children: [
+              Lottie.asset('assets/lottie.json', width: 200, height: 200),
               TextField(
                   controller: textEditingController,
                   decoration: const InputDecoration(
