@@ -17,6 +17,7 @@ class _MainPageState extends State<MainPage> {
   TextEditingController textEditingController = TextEditingController();
   String answer = '';
   XFile? image;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -71,20 +72,45 @@ class _MainPageState extends State<MainPage> {
               ),
               ElevatedButton(
                 onPressed: () {
+                  setState(() {
+                    isLoading = true;
+                  });
                   GenerativeModel model = GenerativeModel(
                       model: 'gemini-1.5-flash-latest', apiKey: apiKey);
+
+                  // model.generateContent([
+                  //   Content.text(textEditingController.text),
+                  // ]).then((value) {
+                  //   setState(() {
+                  //     answer = value.text.toString();
+                  //   });
+                  // });
+
                   model.generateContent([
-                    Content.text(textEditingController.text),
+                    Content.multi([
+                      TextPart(textEditingController.text),
+                      if (image != null)
+                        DataPart(
+                            "image/jpeg", File(image!.path).readAsBytesSync())
+                    ])
                   ]).then((value) {
                     setState(() {
                       answer = value.text.toString();
+                      isLoading = false;
                     });
                   });
                 },
                 child: const Text('Send'),
               ),
               const SizedBox(height: 20),
-              Text(answer),
+              isLoading
+                  ? const UnconstrainedBox(
+                      child: SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator()),
+                    )
+                  : Text(answer),
             ],
           ),
         ));
