@@ -18,6 +18,7 @@ class _MainPageState extends State<MainPage> {
   String answer = '';
   XFile? image;
   bool isLoading = false;
+  int totalTokens = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +78,18 @@ class _MainPageState extends State<MainPage> {
                   });
                   GenerativeModel model = GenerativeModel(
                       model: 'gemini-1.5-flash-latest', apiKey: apiKey);
+                  model.countTokens([
+                    Content.text(textEditingController.text),
+                    Content.multi([
+                      TextPart(textEditingController.text),
+                      if (image != null)
+                        DataPart(
+                            "image/jpeg", File(image!.path).readAsBytesSync())
+                    ])
+                  ]).then((value) {
+                    totalTokens = value.totalTokens;
+                    setState(() {});
+                  });
 
                   // model.generateContent([
                   //   Content.text(textEditingController.text),
@@ -102,6 +115,8 @@ class _MainPageState extends State<MainPage> {
                 },
                 child: const Text('Send'),
               ),
+              const SizedBox(height: 20),
+              Text("tokens: ${totalTokens.toString()}"),
               const SizedBox(height: 20),
               isLoading
                   ? const UnconstrainedBox(
